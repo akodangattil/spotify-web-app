@@ -8,12 +8,12 @@ import pandas as pd
 import logging
 
 # SETTINGS 
-client_id = "34f1d8f9ba594b6093c9f60f854ab9df"
-client_secret = "429af62766754ab9bb213856e9cba8ae"
+client_id = # your client ID here
+client_secret = # your client secret here
 sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id, client_secret))
 endpoint_url = "https://api.spotify.com/v1/recommendations?"
-token = "BQB7dqPasFejYHE3VXXIucOcBc7YAh4v1XpMP_-kJjwMQQ-fA-X_IVPCCuoLAlYw19m-GN9IxqiNykfW8Ouh9jAnmvjOd_b7oq9KZ7p1hUtLhSn79wWw6dqPFdH6cWh5ok5oUCkro-7wWWbbQYPGAfwDzB3-aH5ttVtk-r30wxtR10WHMzgNmufv9clFs_wpbvjB29rxq1BYqkNmy0I1HSVKUUvpiuCXM8EEJUrff7-mUiUjuQVjtiRnCZ7iXRJyBUNPKwHqR1Pbv2pzL3WE9cBP"
-user_id = "	12123525012"
+token = # your token
+user_id = # user id
 
 logger = logging.getLogger('test.find_artist')
 logging.basicConfig(level='INFO')

@@ -1,20 +1,66 @@
 import requests
 import json
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy.util as util
+import sys
+import pandas as pd
+import logging
 
 # SETTINGS 
+client_id = "34f1d8f9ba594b6093c9f60f854ab9df"
+client_secret = "429af62766754ab9bb213856e9cba8ae"
+sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id, client_secret))
 endpoint_url = "https://api.spotify.com/v1/recommendations?"
-token = "BQAdaE3ltwtQNS9fKzNeJKIcITjotQKO4KEq0oc10w0C_CELpMi8d277_qbAFvqEDaI5SSFTmSe5GY7H0ZsjmEmFLm4kdSnnAANtlyEUvhz0qivMjFnTWfLB1IPcmvNX7wn9w92FrHZPm4GDunZpX_HPrng_bxrPBqDiX7SUMb9mW8wHaByz53G56QLSLOf2dlKAcxh7Vz7HDw"
+token = "BQB7dqPasFejYHE3VXXIucOcBc7YAh4v1XpMP_-kJjwMQQ-fA-X_IVPCCuoLAlYw19m-GN9IxqiNykfW8Ouh9jAnmvjOd_b7oq9KZ7p1hUtLhSn79wWw6dqPFdH6cWh5ok5oUCkro-7wWWbbQYPGAfwDzB3-aH5ttVtk-r30wxtR10WHMzgNmufv9clFs_wpbvjB29rxq1BYqkNmy0I1HSVKUUvpiuCXM8EEJUrff7-mUiUjuQVjtiRnCZ7iXRJyBUNPKwHqR1Pbv2pzL3WE9cBP"
 user_id = "	12123525012"
 
+logger = logging.getLogger('test.find_artist')
+logging.basicConfig(level='INFO')
+
+if len(sys.argv) > 1:
+    name = ' '.join(sys.argv[1:])
+else:
+    name = 'Radiohead'
+
+# USER INPUT
+limit = input("How many songs would you like on this playlist? ")
+#seed_genres = input("What genre? ")
+name = input("Please enter an artist: ")
+song_name = input("Please enter a song name: ")
+playlist_name = input("Please enter the name for this playlist: ")
+
+
+# FIND ARTIST
+results = sp.search(q='artist:' + name, type='artist')
+items = results['artists']['items']
+if len(items) > 0:
+    artist = items[0]
+else:
+    None
+
+# FIND TRACK
+results = sp.search(q='track:' + song_name, type='track')
+items = results['tracks']['items']
+if len(items) > 0:
+  track = items[0]
+else:
+  None
+
+logger.info('====%s====', artist['name'])
+#logger.info('Popularity: %s', artist['popularity'])
+#if len(artist['genres']) > 0:
+#    logger.info('Genres: %s', ','.join(artist['genres']))
+logger.info('====%s====', track['name'])
+
 # FILTERS
-limit= 50
 market= "US"
-seed_genres= "alt z"
 target_danceability= 0.7
 target_acousticness = 0.4
 uris = [] 
-seed_artists = '6bmlMHgSheBauioMgKv2tn' #Powfu
-seed_tracks= '4VEEDnEFLI9dUy5QA51rom' #fools (cant help falling in love) by Foster, Sody, Sarcastic Sounds
+seed_artists = artist['id'] 
+seed_genres = artist['genres']
+seed_tracks= track['id'] 
 
 # PERFORM THE QUERY
 query = f'{endpoint_url}limit={limit}&market={market}&seed_genres={seed_genres}&target_danceability={target_danceability}&target_acousticness={target_acousticness}'
@@ -34,7 +80,7 @@ for i,j in enumerate(json_response['tracks']):
 endpoint_url = f"https://api.spotify.com/v1/users/{12123525012}/playlists"
 
 request_body = json.dumps({
-          "name": "Chill Hip Hop",
+          "name": playlist_name,
           "description": "Powfu and 'fools (can't help falling in love)' by Foster, Sody, Sarcastic Sounds",
           "public": True
         })
@@ -45,8 +91,7 @@ url = response.json()['external_urls']['spotify']
 print(response.status_code)
 
 playlist_id = response.json()['id']
-#print(playlist_id)
-#print(json_response)
+
 endpoint_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
 
 request_body = json.dumps({
